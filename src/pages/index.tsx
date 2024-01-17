@@ -39,8 +39,12 @@ function WeightForm() {
 
     const {mutate, error} = api.weight.create.useMutation();
 
+    const {data: weightEntered} = api.weight.weightForTodayEntered.useQuery({});
+
+    if (!weightEntered) {
     return (
-        <form className="flex flex-col items-center justify-center text-amber-50"
+        <div className="w-1/5 mx-auto p-2">
+        <form className="flex flex-col items-center justify-center text-amber-50 bg-blue-400 border border-gray-300 rounded-md"
               onSubmit={(e) => {
                   e.preventDefault();
                   const formData = new FormData(e.currentTarget);
@@ -51,7 +55,13 @@ function WeightForm() {
             <input name="weight" id="weight" type="number" min="100" max="499" step="0.1"
                    className="mb-2 p-2 border border-gray-300 rounded-md text-blue-900"/>
             <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md">Submit</button>
-        </form>)
+        </form>
+        </div>
+            )}
+    else {
+        return
+        <div className="flex flex-col items-center justify-center text-amber-50 bg-blue-400 border border-gray-300 rounded-md">Weight Entered for {new Date().toLocaleDateString()}</div>
+    }
 }
 
 function WeightList() {
@@ -67,15 +77,35 @@ function WeightList() {
     }
 
     return (
-        <ul className="flex flex-col items-center justify-center text-amber-50">
+        <div className="w-2/3 mx-auto p-20" >
+        <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+            <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Weight (lbs)
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                </th>
+            </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
             {weights.map((weight) => (
-                <li key={weight.id}>
-                    {weight.weight} kg on {new Date(weight.createdAt).toLocaleDateString()}
-                </li>
+                <tr key={weight.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{weight.weight}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{new Date(weight.createdAt).toLocaleDateString()}</div>
+                    </td>
+                </tr>
             ))}
-        </ul>
+            </tbody>
+        </table>
+    </div>
     );
 }
+
 
 function AuthModule() {
     const {data: sessionData} = useSession();
@@ -86,7 +116,7 @@ function AuthModule() {
     );
 
     return (
-        <div className="flex flex-row gap-4 p-8">
+        <div className="flex flex-row gap-4 p-8 bg">
             <p className="text-center text-2xl text-white p-2">
                 {secretMessage && <span> {secretMessage}</span>} {sessionData &&
                 <span>{sessionData.user?.name}</span>}

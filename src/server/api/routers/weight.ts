@@ -19,6 +19,22 @@ export const weightRouter = createTRPCRouter({
             });
         }),
 
+    weightForTodayEntered: protectedProcedure
+        .input(z.object({}))
+        .query(async ({ ctx }) => {
+            const today = new Date();
+            const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+            const weights = await ctx.db.weight.findMany({
+                where: {
+                    createdBy: { id: ctx.session.user.id },
+                    createdAt: { gte: todayStart, lt: todayEnd }
+                },
+                orderBy: { createdAt: "desc" },
+            });
+            return weights.length > 0;
+        }),
+
     create: protectedProcedure
         .input(z.object({ weight: z.number().min(100).max(500) }))
         .mutation(async ({ ctx, input }) => {
