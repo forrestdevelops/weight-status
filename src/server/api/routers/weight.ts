@@ -10,13 +10,20 @@ export const weightRouter = createTRPCRouter({
         };
     }),
 
+    getWeights: protectedProcedure
+        .input(z.object({}))
+        .query(async ({ ctx }) => {
+            return ctx.db.weight.findMany({
+                where: { createdBy: { id: ctx.session.user.id } },
+                orderBy: { createdAt: "desc" },
+            });
+        }),
+
     create: protectedProcedure
         .input(z.object({ weight: z.number().min(100).max(500) }))
         .mutation(async ({ ctx, input }) => {
-            // simulate a slow db call
-          //  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+
             return ctx.db.weight.create({
                 data: {
                     weight: input.weight,
@@ -24,6 +31,8 @@ export const weightRouter = createTRPCRouter({
                 },
             });
         }),
+
+
 
     getProtectedMessage: protectedProcedure.query(() => {
         return "Welcome, ";
