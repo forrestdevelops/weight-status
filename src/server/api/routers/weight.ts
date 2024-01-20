@@ -13,6 +13,7 @@ export const weightRouter = createTRPCRouter({
     getWeights: protectedProcedure
         .input(z.object({}))
         .query(async ({ ctx }) => {
+
             return ctx.db.weight.findMany({
                 where: { createdBy: { id: ctx.session.user.id } },
                 orderBy: { createdAt: "desc" },
