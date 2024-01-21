@@ -84,16 +84,43 @@ export function WeightForm() {
 }
 
 function WeightList({weightResult}: {
-    weightResult: { id: number, weight: number, createdAt: Date, updatedAt: Date, createdById: string }[]
+    weightResult: { id: number, weight: number, createdAt: Date, updatedAt: Date, createdById: string, indicator: string }[]
 }) {
     if (!weightResult) {
         return <p className="text-4xl flex justify-center items-center w-full h-full p-20 text-amber-50">No weights
             found, please enter one.</p>;
     }
 
+    const preppedTableData: { createdAt: Date, id: number, weight: number, style: string, indicator:string}[] = [];
+    weightResult.forEach((weight, i) => {
+            const entry: { id: number, createdAt: Date, weight: number, style: string, indicator: string} = {} as { id: number, createdAt: Date, weight: number, style: string, indicator: string};
+        entry.createdAt = weight.createdAt;
+        entry.id = weight.id;
+        entry.weight = weight.weight;
+            if (i < weightResult.length -1) {
+                if (weightResult[i].weight > weightResult[(i + 1)].weight) {
+                   entry.indicator = "▲";
+                   entry.style = "text-green-500";
+                }
+                else if (weightResult[i].weight < weightResult[(i + 1)].weight) {
+                    entry.indicator = "▼";
+                    entry.style = "text-red-500";
+                }
+                else {
+                    entry.indicator = " --"
+                    entry.style = "text-3xl text-blue-500";
+                }
+            }
+            else {
+                entry.indicator = " --"
+                entry.style = "text-3xl text-blue-500";
+            }
+            console.log(entry)
+            preppedTableData.push(entry);
+        })
     return (
-        <div className="w-2/3 mx-auto p-20">
-            <table className="min-w-full divide-y divide-gray-200">
+        <div className="w-1/3 mx-auto p-20">
+            <table className="min-w-full divide-y divide-gray-200 text-center">
                 <thead className="bg-gray-50">
                 <tr>
                     <th scope="col"
@@ -108,14 +135,14 @@ function WeightList({weightResult}: {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
 
-                {weightResult.map((weight) => (
-                    <tr key={weight.id}>
+                {preppedTableData.map((entry) => (
+                    <tr key={entry.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{weight.weight}</div>
+                            <div className="text-2xl text-gray-500">{entry.weight} <span className={entry.style}>{entry.indicator}</span></div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                             <div
-                                className="text-sm text-gray-500">{new Date(weight.createdAt).toLocaleDateString()}</div>
+                                className="text-2xl text-gray-500">{new Date(entry.createdAt).toLocaleDateString()}</div>
                         </td>
                     </tr>
                 ))}
