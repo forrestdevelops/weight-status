@@ -2,7 +2,6 @@ import {signIn, signOut, useSession} from "next-auth/react";
 import Head from "next/head";
 import {api} from "~/utils/api";
 import {useState} from "react";
-import {session} from "next-auth/core/routes";
 
 export default function Home() {
     const {data: sessionData} = useSession();
