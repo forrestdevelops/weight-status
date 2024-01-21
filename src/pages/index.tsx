@@ -98,11 +98,11 @@ function WeightList({weightResult}: {
         entry.id = weight.id;
         entry.weight = weight.weight;
             if (i < weightResult.length -1) {
-                if (weightResult[i].weight > weightResult[(i + 1)].weight) {
+                if (weightResult[i]!.weight > weightResult[(i + 1)]!.weight) {
                    entry.indicator = "▲";
                    entry.style = "text-green-500";
                 }
-                else if (weightResult[i].weight < weightResult[(i + 1)].weight) {
+                else if (weightResult[i]!.weight < weightResult[(i + 1)]!.weight) {
                     entry.indicator = "▼";
                     entry.style = "text-red-500";
                 }
