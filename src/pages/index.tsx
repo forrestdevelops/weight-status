@@ -1,17 +1,19 @@
 import {signIn, signOut, useSession} from "next-auth/react";
 import Head from "next/head";
-import Link from "next/link";
-
 import {api} from "~/utils/api";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 export default function Home() {
     const {data: sessionData} = useSession();
 
-    const { data, isLoading, isError}  = api.weight.getWeights.useQuery({enabled: !!sessionData});
+    const {data, isLoading, isError} = api.weight.getWeights.useQuery({enabled: !!sessionData});
 
 
-    const {data:  todaysWeightResponse, isLoading: todaysIsLoading, isError: todaysWEightIsError } = api.weight.weightForTodayEntered.useQuery({ enabled: !!sessionData });
+    const {
+        data: isWeightEntered,
+        isLoading: isWeightEnteredPending,
+        isError: isWeightEnteredInError
+    } = api.weight.weightForTodayEntered.useQuery({enabled: !!sessionData});
 
 
     return (
@@ -32,9 +34,10 @@ export default function Home() {
                 </nav>
                 {sessionData ?
                     <div>
-                        {todaysIsLoading? <Loading/> : todaysWEightIsError ? <div>Error Fetching weights.</div> :todaysWeightResponse ?
-                           <WeightEntered/> :
-                            <WeightForm/>
+                        {isWeightEnteredPending ? <Loading/> : isWeightEnteredInError ?
+                            <WeightError/> : isWeightEntered ?
+                                <WeightEntered/> :
+                                <WeightForm/>
                         }
                         {isLoading ? <Loading/> : isError ? <div>Error Fetching weights.</div> :
                             <WeightList weightResult={data}/>}
@@ -48,8 +51,12 @@ export default function Home() {
 }
 
 export function WeightForm() {
-    const { mutate, error } = api.weight.create.useMutation();
+    const {mutate, error} = api.weight.create.useMutation();
     const [isFormSubmitted, setFormSubmitted] = useState(false);
+
+    if (error) {
+        return <WeightError />
+    }
 
     if (isFormSubmitted) {
         return <WeightEntered/>
@@ -144,7 +151,8 @@ function AuthModule() {
 }
 
 function WeightEntered() {
-    return <div className="text-3xl flex flex-col items-center justify-center text-amber-50 p-8">Weight Entered for {new Date().toLocaleDateString()}</div>
+    return <div className="text-3xl flex flex-col items-center justify-center text-amber-50 p-8">Weight Entered
+        for {new Date().toLocaleDateString()}</div>
 }
 
 function Loading() {
@@ -161,4 +169,12 @@ function Loading() {
         <span className="sr-only">Loading...</span>
     </div>
 
+}
+
+function WeightError() {
+    return <div className="text-3xl flex flex-col items-center justify-center text-amber-50 p-8"><p>There was an error
+        checking if weight was entered for today.</p>
+        <p>Report any issues on <a href={"https://github.com/forrestdevelops/weight-status/issues"}
+                                   className="text-[hsl(200,100%,40%)]">github</a>.</p>
+    </div>
 }
