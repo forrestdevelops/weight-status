@@ -20,7 +20,7 @@ export const weightRouter = createTRPCRouter({
             });
         }),
 
-    weightForTodayEntered: protectedProcedure
+    weightForTodayEntered:  protectedProcedure
         .input(z.object({}))
         .query(async ({ ctx }) => {
             const today = new Date();
