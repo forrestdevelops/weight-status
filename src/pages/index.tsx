@@ -106,10 +106,10 @@ function WeightList({weightResult}: {
         if (i < weightResult.length - 1) {
             if (weightResult[i]!.weight > weightResult[(i + 1)]!.weight) {
                 entry.indicator = "▲";
-                entry.style = "text-green-500";
+                entry.style = "text-red-500";
             } else if (weightResult[i]!.weight < weightResult[(i + 1)]!.weight) {
                 entry.indicator = "▼";
-                entry.style = "text-red-500";
+                entry.style = "text-green-500";
             } else {
                 entry.indicator = " --"
                 entry.style = "text-3xl text-blue-500";
